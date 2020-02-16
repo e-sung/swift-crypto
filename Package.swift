@@ -23,21 +23,37 @@
 // BoringSSL Commit: 0416e8c3055c7fcfd6c3eab4c127a36df1e6097b
 
 import PackageDescription
+import Foundation
 
-let swiftSettings: [SwiftSetting] = [
+let env = ProcessInfo.processInfo.environment
+let backDeployKey = "SWIFT_CRYPTO_BACK_DEPLOY"
+let isBackDeploy = (env[backDeployKey] as NSString?)?.boolValue == true
+
+var swiftSettings: [SwiftSetting] = [
     .define("CRYPTO_IN_SWIFTPM"),
-    // To develop this on Apple platforms, uncomment this define.
-    // .define("CRYPTO_IN_SWIFTPM_FORCE_BUILD_API"),
 ]
+let platforms: [SupportedPlatform]
 
-let package = Package(
-    name: "swift-crypto",
-    platforms: [
+if isBackDeploy {
+    swiftSettings += [.define("CRYPTO_IN_SWIFTPM_FORCE_BUILD_API")]
+    platforms = [
+        .macOS(.v10_10),
+        .iOS(.v8),
+        .watchOS(.v2),
+        .tvOS(.v9),
+    ]
+} else {
+    platforms = [
         .macOS(.v10_15),
         .iOS(.v13),
         .watchOS(.v6),
         .tvOS(.v13),
-    ],
+    ]
+}
+
+let package = Package(
+    name: "swift-crypto",
+    platforms: platforms,
     products: [
         .library(name: "Crypto", targets: ["Crypto"]),
         /* This target is used only for symbol mangling. It's added and removed automatically because it emits build warnings. MANGLE_START
