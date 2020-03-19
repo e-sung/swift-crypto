@@ -34,22 +34,13 @@ var swiftSettings: [SwiftSetting] = [
 ]
 let platforms: [SupportedPlatform]
 
-if isBackDeploy {
-    swiftSettings += [.define("CRYPTO_IN_SWIFTPM_FORCE_BUILD_API")]
-    platforms = [
-        .macOS(.v10_10),
-        .iOS(.v8),
-        .watchOS(.v2),
-        .tvOS(.v9),
-    ]
-} else {
-    platforms = [
-        .macOS(.v10_15),
-        .iOS(.v13),
-        .watchOS(.v6),
-        .tvOS(.v13),
-    ]
-}
+swiftSettings += [.define("CRYPTO_IN_SWIFTPM_FORCE_BUILD_API")]
+platforms = [
+    .macOS(.v10_10),
+    .iOS(.v8),
+    .watchOS(.v2),
+    .tvOS(.v9),
+]
 
 let package = Package(
     name: "swift-crypto",
